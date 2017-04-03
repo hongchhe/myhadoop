@@ -1,42 +1,40 @@
-From ubuntu:16.04
+From hongchhe/ubuntu-java7
 MAINTAINER Hongchuang <hehongchuang@hotmail.com>
 
-#RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
-#    && localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
-#ENV LANG en_US.utf8
-
-# install openssh-server, openjdk and wget
-RUN     apt-get update \
-     && apt-get install -y openssh-server openjdk-8-jdk wget ssh rsync
+# set environment variable
+ENV     HADOOP_HOME=/usr/local/hadoop 
+ENV     HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
+ENV     YARN_CONF_DIR=$HADOOP_HOME/etc/hadoop
+ENV     PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin 
+ENV     HADOOP_VERSION=2.7.3
 
 #install hadoop 2.7.3
-RUN     wget http://mirrors.hust.edu.cn/apache/hadoop/common/stable/hadoop-2.7.3.tar.gz \
-     && tar -xzvf hadoop-2.7.3.tar.gz \
-     && mv hadoop-2.7.3 /usr/local/hadoop \
-     && rm hadoop-2.7.3.tar.gz
-
-# set environment variable
-ENV     JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64 
-ENV     HADOOP_HOME=/usr/local/hadoop 
-ENV     PATH=$PATH:/usr/local/hadoop/bin:/usr/local/hadoop/sbin 
-
-# ssh without key
-RUN     ssh-keygen -t rsa -f ~/.ssh/id_rsa -P '' \
-     && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys \
-     && chmod 0600 ~/.ssh/authorized_keys
-
-COPY conf/* /usr/local/hadoop/etc/hadoop/
-
-# format namenode
-RUN /usr/local/hadoop/bin/hdfs namenode -format
-
-CMD [ "sh", "-c", "service ssh start; start-dfs.sh; bash"]
+RUN     curl -s http://mirrors.hust.edu.cn/apache/hadoop/common/stable/hadoop-${HADOOP_VERSION}.tar.gz | tar -xz -C /usr/local/ \
+     && cd /usr/local \
+     && ln -s ./hadoop-${HADOOP_VERSION} hadoop
 
 # Hdfs ports
-EXPOSE 50010 50020 50070 50075 50090 8020 9000
+EXPOSE  50010 50020 50070 50075 50090 8020 9000
 # Mapred ports
-EXPOSE 10020 19888
+EXPOSE  10020 19888
 #Yarn ports
-EXPOSE 8030 8031 8032 8033 8040 8042 8088
+EXPOSE  8030 8031 8032 8033 8040 8042 8088
 #Other ports
-EXPOSE 49707 2122
+EXPOSE  49707 2122
+
+COPY    conf/* $HADOOP_CONF_DIR/
+COPY    run.sh $HADOOP_HOME/
+
+RUN     chmod +x $HADOOP_HOME/run.sh \
+     && sed -i '/^export JAVA_HOME/ s:.*:export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64:' $HADOOP_CONF_DIR/hadoop-env.sh \
+     && sed -i '/^export HADOOP_CONF_DIR/ s:.*:export HADOOP_CONF_DIR=/usr/local/hadoop/etc/hadoop/:' $HADOOP_CONF_DIR/hadoop-env.sh \
+# ssh without key
+     && ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa \
+     && cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys \
+     && chmod 0600 ~/.ssh/authorized_keys \
+     && mv $HADOOP_CONF_DIR/ssh_config ~/.ssh/config 
+
+WORKDIR $HADOOP_HOME
+
+ENTRYPOINT ["./run.sh"]
+

@@ -1,10 +1,14 @@
 #!/bin/bash
 
-: ${CONF_HBASE:=/usr/local/hbase/conf/hbase-site.xml}
+: ${HBASE_HOME:=/usr/local/hbase}
+
+: ${HBASE_MODE:=standalone}
 
 : ${HDFS_HOST:=localhost}
 
-sed -i ${CONF_HBASE} -e "s/{{hdfsHost}}/${HDFS_HOST}/"
+cp ${HBASE_HOME}/conf/hbase-site-${HBASE_MODE}.xml ${HBASE_HOME}/conf/hbase-site.xml
+
+sed -i ${HBASE_HOME}/conf/hbase-site.xml -e "s/{{hdfsHost}}/${HDFS_HOST}/"
 
 #start ssh service
 service ssh start

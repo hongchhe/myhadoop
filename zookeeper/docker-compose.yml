@@ -1,0 +1,26 @@
+version: '3.0'
+services:
+  zookeeper1:
+    build: .
+    image: zk1
+    container_name: zk1
+    ports:
+      - 2181:2181
+      - 2888:2888
+      - 3888:3888
+    networks:
+      - net_zookeeper
+  zookeeper2:
+    build: .
+    image: zk1
+    container_name: zk2
+    ports:
+      - 2181:2181
+      - 2888:2888
+      - 3888:3888
+    networks:
+      - net_zookeeper
+
+networks:
+  net_zookeeper:
+    driver: bridge

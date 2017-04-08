@@ -24,4 +24,4 @@ EXPOSE     2181 2888 3888
 
 WORKDIR    ${ZK_HOME}
 
-ENTRYPOINT ["run.sh"]
+ENTRYPOINT ["./run.sh"]

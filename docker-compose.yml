@@ -45,6 +45,7 @@ services:
       - hadoop
     environment:
       - HDFS_HOST=hadoop
+      - HBASE_MODE=pseudo
     ports:
       - 16010:16010
       - 16020:16020

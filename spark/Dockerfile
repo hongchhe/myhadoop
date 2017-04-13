@@ -14,7 +14,7 @@ RUN     mkdir -p ${SPARK_HOME} \
 # masterWebUI / master service / REST server
 EXPOSE  8080 7077 6066
 # workerUI / driverProgramWebUI
-EXPOSE 8081 4040
+EXPOSE 8081 4040 4041
 
 COPY    conf/* $SPARK_CONF_DIR/
 COPY    run.sh $SPARK_HOME/

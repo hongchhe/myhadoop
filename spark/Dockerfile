@@ -6,10 +6,19 @@ ENV     SPARK_HOME=/opt/spark
 ENV     SPARK_CONF_DIR=$SPARK_HOME/conf
 ENV     PATH=$PATH:$SPARK_HOME/bin:$SPARK_HOME/sbin 
 ENV     SPARK_VERSION=2.1.0
-ENV     SPARK_URL=http://www.gtlib.gatech.edu/pub/apache
+ENV     SPARK_URL=http://mirror.bit.edu.cn/apache
+#ENV     SPARK_URL=http://www.gtlib.gatech.edu/pub/apache
+
 #install spark 2.1.0
 RUN     mkdir -p ${SPARK_HOME} \
      && wget -q -O - ${SPARK_URL}/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop2.7.tgz | tar -xzC ${SPARK_HOME} --strip-components=1
+
+#install python related library
+RUN     apt-get install -y  ipython \
+     && wget https://bootstrap.pypa.io/get-pip.py \
+     && python get-pip.py \
+     && pip install numpy scipy pandas
+
 
 # masterWebUI / master service / REST server
 EXPOSE  8080 7077 6066

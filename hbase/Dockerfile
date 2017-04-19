@@ -1,16 +1,17 @@
 From hongchhe/ubuntu-java7
 MAINTAINER Hongchuang <hehongchuang@hotmail.com>
 
-#install hbase-1.2.5
-RUN     wget -q http://ftp.wayne.edu/apache/hbase/stable/hbase-1.2.5-bin.tar.gz \
-     && tar -xzf hbase-1.2.5-bin.tar.gz \
-     && mv hbase-1.2.5 /usr/local/hbase \
-     && rm -f hbase-1.2.5-bin.tar.gz \
-     && cd /usr/local/hbase
 
 # set environment variable
 ENV     HBASE_HOME=/usr/local/hbase
 ENV     PATH=$PATH:${HBASE_HOME}/bin:${HBASE_HOME}/sbin 
+ENV     HBASE_URL=http://mirrors.hust.edu.cn/apache/hbase/stable
+#ENV     HBASE_URL=http://ftp.wayne.edu/apache/hbase/stable
+ENV     HBASE_VERSION=1.2.5
+
+#install hbase-1.2.5
+RUN     mkdir -p ${HBASE_HOME} \ 
+     && wget -q -O - ${HBASE_URL}/hbase-${HBASE_VERSION}-bin.tar.gz | tar -xzC ${HBASE_HOME} --strip-components=1
 
 COPY    conf/* ${HBASE_HOME}/conf/
 COPY    run.sh ${HBASE_HOME}

@@ -1,0 +1,100 @@
+version: '3.0'
+services:
+  hadoop1:
+    build: .
+    image: hadoop1
+    container_name: hadoop1
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./myvol:/myvol
+    hostname: hadoop1
+    external_links:
+      - hadoop3
+      - hadoop2:hadoop2
+    environment:
+      - HDFS_HOST=hadoop1
+      - SLAVE_LIST=hadoop2 \nhadoop3
+    ports:
+      - 50010:50010
+      - 50020:50020
+      - 50070:50070 # name node port
+      - 50075:50075
+      - 9000:9000
+      - 8020:8020
+      - 8088:8088   # resource manager webapp port
+      - 19888:19888 # mapreduce job history webapp server
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:50070"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - net_hadoop
+
+  hadoop2:
+    build: .
+    image: hadoop1
+    container_name: hadoop2
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./myvol:/myvol
+    hostname: hadoop2
+    external_links:
+      - hadoop1
+      - hadoop3:hadoop3
+    environment:
+      - HDFS_HOST=hadoop1
+      - SLAVE_LIST=hadoop2 \nhadoop3
+    ports:
+      - 50010
+      - 50020
+      - 50070 # name node port
+      - 50075
+      - 9000
+      - 8020
+      - 8088  # resource manager webapp port
+      - 19888 # mapreduce job history webapp server
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:50070"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - net_hadoop
+
+  hadoop3:
+    build: .
+    image: hadoop1
+    container_name: hadoop3
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./myvol:/myvol
+    hostname: hadoop3
+    external_links:
+      - hadoop1
+      - hadoop2:hadoop2
+    environment:
+      - HDFS_HOST=hadoop1
+      - SLAVE_LIST=hadoop2 \nhadoop3
+    ports:
+      - 50010
+      - 50020
+      - 50070 # name node port
+      - 50075
+      - 9000
+      - 8020
+      - 8088  # resource manager webapp port
+      - 19888 # mapreduce job history webapp server
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:50070"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - net_hadoop
+networks:
+  net_hadoop:
+    driver: bridge

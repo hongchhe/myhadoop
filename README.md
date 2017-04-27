@@ -15,8 +15,10 @@ How does this project work
   > docker-compose -f docker-compose-cluster.yml up
 
 ## Spark
-### Creating using docker-compose
 ### Tasks list
-[] ...
-[] ...
+- [x] create standalone Dockerfile and docker-compose
+- [x] add the python related tools to be used, e.g. numpy, scipy,pandas, ipython and ipython-notebook
+- [ ] provide the quick-start examples
+- [ ] create complicated cluster environments
+### Creating using docker-compose
 ## Hbase

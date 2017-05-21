@@ -1,7 +1,7 @@
-From       hongchhe/ubuntu-java7
+From       hongchhe/ubuntu-python-java
 MAINTAINER Hongchuang <hehongchuang@hotmail.com>
 
-ARG        ZK_URL=http://apache.mesi.com.ar/zookeeper/
+ARG        ZK_URL=https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/
 ARG        ZK_VERSION=3.4.10
 
 LABEL      name="zookeeper" version=$VERSION

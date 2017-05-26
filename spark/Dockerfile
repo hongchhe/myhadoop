@@ -1,4 +1,4 @@
-From hongchhe/ubuntu-java7
+From hongchhe/ubuntu-python-java
 MAINTAINER Hongchuang <hehongchuang@hotmail.com>
 
 # set environment variable
@@ -11,28 +11,29 @@ ENV     SPARK_URL=http://mirror.bit.edu.cn/apache
 
 #install spark 2.1.0
 RUN     mkdir -p ${SPARK_HOME} \
-     && wget -q -O - ${SPARK_URL}/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop2.7.tgz | tar -xzC ${SPARK_HOME} --strip-components=1
-
-#install python related library
-RUN     apt-get install -y  ipython ipython-notebook \
-     && wget https://bootstrap.pypa.io/get-pip.py \
-     && python get-pip.py \
+     && wget -q -O - ${SPARK_URL}/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop2.7.tgz | tar -xzC ${SPARK_HOME} --strip-components=1 \
+        # install python related library
+     && apt-get install -y python-matplotlib \
      && pip install numpy scipy pandas
 
+ENV     PYSPARK_PYTHON=/usr/bin/python2.7
+ENV     PYSPARK_DRIVER_PYTHON=ipython
+ENV     PYSPARK_DRIVER_PYTHON_OPTS="notebook --no-browser --ip=* --matplotlib=inline"
+ENV     PATH="$PATH:$SPARK_HOME/bin:$SPARK_HOME/sbin"
 
 # masterWebUI / master service / REST server
 EXPOSE  8080 7077 6066
 # workerUI / driverProgramWebUI
-EXPOSE 8081 4040 4041
+EXPOSE  8081 4040 4041
 # ipython notebook
-EXPOSE 8888
+EXPOSE  8888
 
 COPY    conf/* $SPARK_CONF_DIR/
 COPY    run.sh $SPARK_HOME/
 
 RUN     chmod +x $SPARK_HOME/run.sh \
      && mkdir -p /myvol \
-     # ssh without key
+        # ssh without key
      && ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa \
      && mv $SPARK_CONF_DIR/ssh_config ~/.ssh/config 
 

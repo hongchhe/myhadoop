@@ -18,7 +18,7 @@ sleep 3
 cp /myvol/authorized_keys ~/.ssh/authorized_keys
 
 #start spark if it's master node
-if [ $HOST_TYPE="master" ]
+if [ $HOST_TYPE = "master" ]
 then
   echo -e ${SLAVE_LIST} > ${SPARK_CONF_DIR}/slaves;
   ./sbin/start-all.sh;

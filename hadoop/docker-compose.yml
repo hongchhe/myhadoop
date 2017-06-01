@@ -2,7 +2,7 @@ version: '3.0'
 services:
   hadoop:
     build: .
-    image: hadoop1
+    image: hongchhe/hadoop
     container_name: hadoop0
     ulimits:
       memlock:

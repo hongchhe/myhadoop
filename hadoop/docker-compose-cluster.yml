@@ -1,20 +1,22 @@
 version: '3.0'
 services:
-  hadoop1:
+  namenode1:
     build: .
-    image: hadoop1
-    container_name: hadoop1
+    image: hongchhe/hadoop
+    container_name: namenode1
     cap_add:
       - IPC_LOCK
     volumes:
       - ./myvol:/myvol
-    hostname: hadoop1
+    hostname: namenode1
     external_links:
-      - hadoop3
-      - hadoop2:hadoop2
+      - datanode2
+      - datanode1:datanode1
     environment:
-      - HDFS_HOST=hadoop1
-      - SLAVE_LIST=hadoop2 \nhadoop3
+      - HDFS_HOST=namenode1
+      - SLAVE_LIST=datanode1 \ndatanode2
+      - HDFS_TYPE=namenode
+      - YARN_TYPE=none
     ports:
       - 50010:50010
       - 50020:50020
@@ -22,8 +24,8 @@ services:
       - 50075:50075
       - 9000:9000
       - 8020:8020
-      - 8088:8088   # resource manager webapp port
-      - 19888:19888 # mapreduce job history webapp server
+      #- 8088:8088   # resource manager webapp port
+      #- 19888:19888 # mapreduce job history webapp server
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:50070"]
       interval: 1m30s
@@ -32,21 +34,23 @@ services:
     networks:
       - net_hadoop
 
-  hadoop2:
+  datanode1:
     build: .
-    image: hadoop1
-    container_name: hadoop2
+    image: hongchhe/hadoop
+    container_name: datanode1
     cap_add:
       - IPC_LOCK
     volumes:
       - ./myvol:/myvol
-    hostname: hadoop2
+    hostname: datanode1
     external_links:
-      - hadoop1
-      - hadoop3:hadoop3
+      - namenode1
+      - datanode2:datanode2
     environment:
-      - HDFS_HOST=hadoop1
-      - SLAVE_LIST=hadoop2 \nhadoop3
+      - HDFS_HOST=namenode1
+      - SLAVE_LIST=datanode1 \ndatanode2
+      - HDFS_TYPE=datanode
+      - YARN_TYPE=none
     ports:
       - 50010
       - 50020
@@ -64,21 +68,23 @@ services:
     networks:
       - net_hadoop
 
-  hadoop3:
+  datanode2:
     build: .
-    image: hadoop1
-    container_name: hadoop3
+    image: hongchhe/hadoop
+    container_name: datanode2
     cap_add:
       - IPC_LOCK
     volumes:
       - ./myvol:/myvol
-    hostname: hadoop3
+    hostname: datanode2
     external_links:
-      - hadoop1
-      - hadoop2:hadoop2
+      - namenode1
+      - datanode1:datanode1
     environment:
-      - HDFS_HOST=hadoop1
-      - SLAVE_LIST=hadoop2 \nhadoop3
+      - HDFS_HOST=namenode1
+      - SLAVE_LIST=datanode1 \ndatanode2
+      - HDFS_TYPE=datanode
+      - YARN_TYPE=none
     ports:
       - 50010
       - 50020
@@ -88,13 +94,89 @@ services:
       - 8020
       - 8088  # resource manager webapp port
       - 19888 # mapreduce job history webapp server
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:50070"]
-      interval: 1m30s
-      timeout: 10s
-      retries: 3
     networks:
       - net_hadoop
+
+#  backupnode1:
+#    build: .
+#    image: hongchhe/hadoop
+#    container_name: backupnode1
+#    cap_add:
+#      - IPC_LOCK
+#    volumes:
+#      - ./myvol:/myvol
+#    hostname: backupnode1
+#    environment:
+#      - HDFS_HOST=namenode1
+#      - SLAVE_LIST=datanode1 \ndatanode2
+#      - HDFS_TYPE=backup
+#      - YARN_TYPE=none
+#    ports:
+#      - 50010
+#      - 50020
+#      - 50070 # name node port
+#      - 50075
+#      - 50100
+#      - 50105
+#      - 9000
+#      - 8020
+#      - 8088  # resource manager webapp port
+#      - 19888 # mapreduce job history webapp server
+#    networks:
+#      - net_hadoop
+#
+#  resourcemanager1:
+#    build: .
+#    image: hongchhe/hadoop
+#    container_name: resourcemanager1
+#    cap_add:
+#      - IPC_LOCK
+#    volumes:
+#      - ./myvol:/myvol
+#    hostname: resourcemanager1
+#    environment:
+#      - HDFS_HOST=namenode1
+#      - SLAVE_LIST=datanode1 \ndatanode2
+#      - HDFS_TYPE=none
+#      - YARN_TYPE=resourcemanager
+#    ports:
+#      - 50010
+#      - 50020
+#      - 50070 # name node port
+#      - 50075
+#      - 9000
+#      - 8020
+#      - 8088:8088   # resource manager webapp port
+#      - 19888:19888 # mapreduce job history webapp server
+#    networks:
+#      - net_hadoop
+#
+#  nodemanager1:
+#    build: .
+#    image: hongchhe/hadoop
+#    container_name: nodemanager1
+#    cap_add:
+#      - IPC_LOCK
+#    volumes:
+#      - ./myvol:/myvol
+#    hostname: nodemanager1
+#    environment:
+#      - HDFS_HOST=namenode1
+#      - SLAVE_LIST=datanode1 \ndatanode2
+#      - HDFS_TYPE=none
+#      - YARN_TYPE=nodemanager
+#    ports:
+#      - 50010
+#      - 50020
+#      - 50070 # name node port
+#      - 50075
+#      - 9000
+#      - 8020
+#      - 8088  # resource manager webapp port
+#      - 19888 # mapreduce job history webapp server
+#    networks:
+#      - net_hadoop
+#      
 networks:
   net_hadoop:
     driver: bridge

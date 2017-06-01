@@ -1,6 +1,45 @@
 <configuration>
-    <property>
-        <name>dfs.replication</name>
-        <value>1</value>
-    </property>
+  <property>
+    <name>dfs.replication</name>
+    <value>1</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.http-address</name>
+    <value>{{hdfsHost}}:50070</value>
+  </property>
+
+  <property>
+    <name>dfs.namenode.backup.address</name>
+    <value>0.0.0.0:50100</value>
+    <description>
+      The backup node server address and port. 
+      If the port is 0 then the server will start on a free port.
+    </description>
+  </property>
+  <property>
+    <name>dfs.namenode.backup.http-address</name>
+    <value>0.0.0.0:50105</value>
+    <description>
+      The backup node http server address and port. 
+      If the port is 0 then the server will start on a free port. 
+    </description>
+  </property>
+
+  <property>
+    <name>dfs.namenode.checkpoint.period</name>
+    <value>3600</value>
+    <description>
+      The number of seconds between two periodic checkpoints. 
+    </description>
+  </property>
+  <property>
+    <name>dfs.namenode.checkpoint.txns</name>
+    <value>1000000</value>
+    <description>
+      The Secondary NameNode or CheckpointNode will create a checkpoint
+      of the namespace every 'dfs.namenode.checkpoint.txns' transactions,
+      regardless of whether 'dfs.namenode.checkpoint.period' has expired. 
+    </description>
+  </property>
 </configuration>

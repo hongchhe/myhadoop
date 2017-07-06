@@ -2,7 +2,7 @@ version: '3.0'
 services:
   zookeeper:
     build: .
-    image: zk1
+    image: hongchhe/zk
 #    container_name: zk1
     environment:
       - ZK_MODE=standalone

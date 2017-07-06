@@ -1,4 +1,4 @@
-From       hongchhe/ubuntu-python-java
+FROM       hongchhe/ubuntu-python-java
 MAINTAINER Hongchuang <hehongchuang@hotmail.com>
 
 ARG        ZK_URL=https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/
@@ -18,7 +18,12 @@ COPY       conf/* ${ZK_HOME}/conf/
 COPY       scripts/* ${ZK_HOME}/
 
 RUN        chmod +x ${ZK_HOME}/run.sh \
-        && mkdir -p ${ZK_HOME}/var/data
+        && mkdir -p ${ZK_HOME}/var/data \
+        && mkdir -p /myvol \
+           # allow ssh using root user as a temporary solution. 
+        && mv ${ZK_HOME}/conf/sshd_config /etc/ssh/sshd_config
+
+VOLUME     /myvol
 
 EXPOSE     2181 2888 3888
 

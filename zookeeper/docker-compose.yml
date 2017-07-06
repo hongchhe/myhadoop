@@ -2,8 +2,10 @@ version: '3.0'
 services:
   zk1:
     build: .
-    image: zk
+    image: hongchhe/zk
     container_name: zk1
+    volumes:
+      - ./myvol:/myvol
     environment:
       - ZK_MODE=replicated
       - ZK_SERVER_NAME=zk
@@ -17,9 +19,10 @@ services:
       - net_zookeeper
 
   zk2:
-    build: .
-    image: zk
+    image: hongchhe/zk
     container_name: zk2
+    volumes:
+      - ./myvol:/myvol
     environment:
       - ZK_MODE=replicated
       - ZK_SERVER_NAME=zk
@@ -36,9 +39,10 @@ services:
       - net_zookeeper
 
   zk3:
-    build: .
-    image: zk
+    image: hongchhe/zk
     container_name: zk3
+    volumes:
+      - ./myvol:/myvol
     environment:
       - ZK_MODE=replicated
       - ZK_SERVER_NAME=zk

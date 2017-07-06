@@ -1,4 +1,4 @@
-From hongchhe/ubuntu-java7
+FROM hongchhe/ubuntu-java7
 MAINTAINER Hongchuang <hehongchuang@hotmail.com>
 
 

@@ -1,0 +1,35 @@
+FROM hongchhe/ubuntu-python-java
+MAINTAINER Hongchuang <hehongchuang@hotmail.com>
+
+# set environment variable
+ENV     HIVE_HOME=/opt/hive 
+ENV     HIVE_CONF_DIR=$HIVE_HOME/conf
+ENV     PATH=$PATH:$HIVE_HOME/bin:$HIVE_HOME/sbin 
+ENV     HIVE_VERSION=2.1.1
+ENV     HIVE_URL=http://mirrors.hust.edu.cn/apache
+
+#install hive 2.1.1	
+RUN     mkdir -p ${HIVE_HOME} \
+     && wget -q -O - ${HIVE_URL}/hive/stable-2/apache-hive-${HIVE_VERSION}-bin.tar.gz | tar -xzC ${HIVE_HOME} --strip-components=1
+
+ENV     PATH="$PATH:$HIVE_HOME/bin"
+
+# masterWebUI / master service / REST server
+EXPOSE  8080 7077 6066
+
+
+COPY    conf/* $HIVE_CONF_DIR/
+COPY    run.sh $HIVE_HOME/
+
+RUN     chmod +x $HIVE_HOME/run.sh \
+     && mkdir -p /myvol \
+        # ssh without key
+     && ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa \
+     && mv $HIVE_CONF_DIR/ssh_config ~/.ssh/config 
+
+VOLUME /myvol
+
+WORKDIR $HIVE_HOME
+
+ENTRYPOINT ["./run.sh"]
+

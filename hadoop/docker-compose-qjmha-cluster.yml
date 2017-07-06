@@ -1,0 +1,224 @@
+version: '3.0'
+services:
+  zk1:
+    image: hongchhe/zk
+    container_name: zk1
+    volumes:
+      - ./myvol:/myvol
+    environment:
+      - ZK_MODE=replicated
+      - ZK_SERVER_NAME=zk
+      - ZK_SERVER_NUM=3
+      - ZK_SERVER_ID=1
+    ports:
+      - 2181:2181
+      - 2888:2888
+      - 3888:3888
+    networks:
+      - net_hadoop
+
+  zk2:
+    image: hongchhe/zk
+    container_name: zk2
+    volumes:
+      - ./myvol:/myvol
+    environment:
+      - ZK_MODE=replicated
+      - ZK_SERVER_NAME=zk
+      - ZK_SERVER_NUM=3
+      - ZK_SERVER_ID=2
+    ports:
+      - 2181
+      - 2888
+      - 3888
+    networks:
+      - net_hadoop
+
+  zk3:
+    image: hongchhe/zk
+    container_name: zk3
+    volumes:
+      - ./myvol:/myvol
+    environment:
+      - ZK_MODE=replicated
+      - ZK_SERVER_NAME=zk
+      - ZK_SERVER_NUM=3
+      - ZK_SERVER_ID=3
+    ports:
+      - 2181
+      - 2888
+      - 3888
+    networks:
+      - net_hadoop
+
+  namenode1:
+    build: .
+    image: hongchhe/hadoop
+    container_name: namenode1
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./myvol:/myvol
+    hostname: namenode1
+    environment:
+      - HDFS_HOST=namenode1
+      - SLAVE_LIST=datanode1 \ndatanode2
+      - HDFS_TYPE=namenode
+      - HDFS_REPLICA=2
+      - YARN_TYPE=none
+      - NN_HA=true
+      - NAMESERVICES=nncluster
+    ports:
+      - 50070:50070 # name node port
+      - 9000:9000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:50070"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - net_hadoop
+
+  namenode2:
+    build: .
+    image: hongchhe/hadoop
+    container_name: namenode2
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./myvol:/myvol
+    hostname: namenode2
+    environment:
+      - HDFS_HOST=namenode2
+      - SLAVE_LIST=datanode1 \ndatanode2
+      - HDFS_TYPE=standbynamenode
+      - HDFS_REPLICA=2
+      - YARN_TYPE=none
+      - NN_HA=true
+      - NAMESERVICES=nncluster
+    ports:
+      - 51070:50070 # name node port
+      - 9100:9000
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:50070"]
+      interval: 1m30s
+      timeout: 10s
+      retries: 3
+    networks:
+      - net_hadoop
+
+  datanode1:
+    image: hongchhe/hadoop
+    container_name: datanode1
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./myvol:/myvol
+    hostname: datanode1
+    environment:
+      - HDFS_HOST=namenode1
+      - SLAVE_LIST=datanode1 \ndatanode2
+      - HDFS_TYPE=datanode
+      - HDFS_REPLICA=2
+      - YARN_TYPE=none
+      - NN_HA=true
+      - NAMESERVICES=nncluster
+    ports:
+      - 50010
+      - 50020
+      - 50075
+    networks:
+      - net_hadoop
+
+  datanode2:
+    image: hongchhe/hadoop
+    container_name: datanode2
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./myvol:/myvol
+    hostname: datanode2
+    environment:
+      - HDFS_HOST=namenode1
+      - SLAVE_LIST=datanode1 \ndatanode2
+      - HDFS_TYPE=datanode
+      - HDFS_REPLICA=2
+      - YARN_TYPE=none
+      - NN_HA=true
+      - NAMESERVICES=nncluster
+    ports:
+      - 50010
+      - 50020
+      - 50075
+    networks:
+      - net_hadoop
+
+  jl1:
+    image: hongchhe/hadoop
+    container_name: jl1
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./myvol:/myvol
+    hostname: jl1
+    environment:
+      - HDFS_HOST=namenode1
+      - SLAVE_LIST=datanode1 \ndatanode2
+      - HDFS_TYPE=journalnode
+      - HDFS_REPLICA=2
+      - YARN_TYPE=none
+      - NN_HA=true
+      - NAMESERVICES=nncluster
+    ports:
+      - 8485:8485
+      - 8480
+    networks:
+      - net_hadoop
+
+  jl2:
+    image: hongchhe/hadoop
+    container_name: jl2
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./myvol:/myvol
+    hostname: jl2
+    environment:
+      - HDFS_HOST=namenode1
+      - SLAVE_LIST=datanode1 \ndatanode2
+      - HDFS_TYPE=journalnode
+      - HDFS_REPLICA=2
+      - YARN_TYPE=none
+      - NN_HA=true
+      - NAMESERVICES=nncluster
+    ports:
+      - 8485
+      - 8480
+    networks:
+      - net_hadoop
+
+  jl3:
+    image: hongchhe/hadoop
+    container_name: jl3
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./myvol:/myvol
+    hostname: jl3
+    environment:
+      - HDFS_HOST=namenode1
+      - SLAVE_LIST=datanode1 \ndatanode2
+      - HDFS_TYPE=journalnode
+      - HDFS_REPLICA=2
+      - YARN_TYPE=none
+      - NN_HA=true
+      - NAMESERVICES=nncluster
+    ports:
+      - 8485
+      - 8480
+    networks:
+      - net_hadoop
+
+networks:
+  net_hadoop:
+    driver: bridge

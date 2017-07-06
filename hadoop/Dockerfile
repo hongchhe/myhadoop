@@ -1,4 +1,4 @@
-From hongchhe/ubuntu-python-java
+FROM hongchhe/ubuntu-python-java
 MAINTAINER Hongchuang <hehongchuang@hotmail.com>
 
 # set environment variable
@@ -18,28 +18,32 @@ RUN     mkdir -p ${HADOOP_HOME} \
 EXPOSE  50070 50470 8020 9000
 # Hdfs data node ports
 EXPOSE  50010 50020 50075 50475
+# HDFS journal node ports
+EXPOSE  8485 8480
 # Hdfs checkpoint/backup/SecondaryNameNode ports
 EXPOSE  50090 50100 50105
 # Mapred ports
 EXPOSE  10020 19888
 # Resource Manager ports
 EXPOSE  8088
-#Yarn ports
+# Yarn ports
 EXPOSE  8030 8031 8032 8033 8040 8042
 #Other ports
 EXPOSE  49707 2122
 
 COPY    conf/* $HADOOP_CONF_DIR/
-COPY    run.sh $HADOOP_HOME/
+COPY    scripts/ $HADOOP_HOME/scripts
 
-RUN     chmod +x $HADOOP_HOME/run.sh \
+RUN     chmod +x $HADOOP_HOME/scripts/run.sh \
      && sed -i '/^export JAVA_HOME/ s:.*:export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64:' $HADOOP_CONF_DIR/hadoop-env.sh \
      && sed -i '/^export HADOOP_CONF_DIR/ s:.*:export HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop/:' $HADOOP_CONF_DIR/hadoop-env.sh \
-     && mkdir -p /myvol 
+     && mkdir -p /myvol \
+     # allow ssh using root user as a temporary solution. 
+     && mv $HADOOP_CONF_DIR/sshd_config /etc/ssh/sshd_config
 
 VOLUME /myvol
 
 WORKDIR $HADOOP_HOME
 
-ENTRYPOINT ["./run.sh"]
+ENTRYPOINT ["./scripts/run.sh"]
 

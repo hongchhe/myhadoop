@@ -18,12 +18,12 @@ services:
       - HDFS_TYPE=namenode
       - YARN_TYPE=none
     ports:
-      - 50010:50010
-      - 50020:50020
       - 50070:50070 # name node port
-      - 50075:50075
       - 9000:9000
-      - 8020:8020
+      #- 50010:50010
+      #- 50020:50020
+      #- 50075:50075
+      #- 8020:8020
       #- 8088:8088   # resource manager webapp port
       #- 19888:19888 # mapreduce job history webapp server
     healthcheck:
@@ -96,6 +96,72 @@ services:
       - 19888 # mapreduce job history webapp server
     networks:
       - net_hadoop
+
+#  jl1:
+#    build: .
+#    image: hongchhe/hadoop
+#    container_name: jl1
+#    cap_add:
+#      - IPC_LOCK
+#    volumes:
+#      - ./myvol:/myvol
+#    hostname: jl1
+#    environment:
+#      - HDFS_HOST=namenode1
+#      - SLAVE_LIST=datanode1 \ndatanode2
+#      - HDFS_TYPE=journalnode
+#      - YARN_TYPE=none
+#    ports:
+#      - 50010
+#      - 50020
+#      - 50075
+#      - 8485
+#    networks:
+#      - net_hadoop
+#
+#  jl2:
+#    build: .
+#    image: hongchhe/hadoop
+#    container_name: jl2
+#    cap_add:
+#      - IPC_LOCK
+#    volumes:
+#      - ./myvol:/myvol
+#    hostname: jl2
+#    environment:
+#      - HDFS_HOST=namenode1
+#      - SLAVE_LIST=datanode1 \ndatanode2
+#      - HDFS_TYPE=journalnode
+#      - YARN_TYPE=none
+#    ports:
+#      - 50010
+#      - 50020
+#      - 50075
+#      - 8485
+#    networks:
+#      - net_hadoop
+#
+#  jl3:
+#    build: .
+#    image: hongchhe/hadoop
+#    container_name: jl3
+#    cap_add:
+#      - IPC_LOCK
+#    volumes:
+#      - ./myvol:/myvol
+#    hostname: jl3
+#    environment:
+#      - HDFS_HOST=namenode1
+#      - SLAVE_LIST=datanode1 \ndatanode2
+#      - HDFS_TYPE=journalnode
+#      - YARN_TYPE=none
+#    ports:
+#      - 50010
+#      - 50020
+#      - 50075
+#      - 8485
+#    networks:
+#      - net_hadoop
 
 #  backupnode1:
 #    build: .

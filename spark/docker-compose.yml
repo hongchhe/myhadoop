@@ -1,13 +1,26 @@
 version: '3.0'
 services:
   spark-master0:
-    build: .
-    image: spark
+    build:
+      context: .
+      dockerfile: DockerfileWithLivy
+    image: hongchhe/sparkwithlivy
     container_name: spark-master0
     hostname: spark-master0
     environment:
-      - HOST_TYPE=master
+      - SPARK_TYPE=master
+      - SPARK_MASTER_URL=spark:\/\/spark-master0:7077
+      - START_SPARK_HISTORY_SERVER=true
+      - SPARK_EVENTLOG_DIR:=hdfs:\/\/spark-master0:9000\/spark\/eventlog
+      - WORKER_LIST=spark-worker0 \nspark-worker1
+      - HDFS_HOST=spark-master0
       - SLAVE_LIST=spark-worker0 \nspark-worker1
+      - HDFS_TYPE=namenode
+      - YARN_TYPE=none
+      - HDFS_REPLICA=2
+      - START_LIVY_SERVER=true
+    volumes:
+      - ./myvol:/myvol
     ulimits:
       memlock:
         soft: -1
@@ -19,12 +32,16 @@ services:
       - IPC_LOCK
     ports:
       - 8080:8080 # masterWebUI
-      - 8081:8081 # workerUI
       - 7077:7077 # master service
       - 6066:6066 # REST server
-      - 4040:4040 # driverProgramWebUI
-      - 4041:4041
+      - 18080:18080 # history server
+      - 4040 # driverProgramWebUI
+      - 4041
       - 8888:8888 # ipython notebook
+      # HDFS ENV
+      - 50070:50070 # name node port
+      - 9000:9000
+      - 8998:8998
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8080"]
       interval: 1m30s
@@ -35,11 +52,20 @@ services:
 
   spark-worker0:
     build: .
-    image: spark
+    image: hongchhe/spark
     container_name: spark-worker0
     hostname: spark-worker0
     environment:
-      - HOST_TYPE=slave
+      - SPARK_TYPE=slave
+      - SPARK_MASTER=spark:\/\/spark-master0:7077
+      # HDFS ENV
+      - HDFS_HOST=spark-master0
+      - SLAVE_LIST=spark-worker0 \nspark-worker1
+      - HDFS_TYPE=datanode
+      - YARN_TYPE=none
+      - HDFS_REPLICA=2
+    volumes:
+      - ./myvol:/myvol
     ulimits:
       memlock:
         soft: -1
@@ -50,20 +76,33 @@ services:
     cap_add:
       - IPC_LOCK
     ports:
-      - 8081
+      - 8081:8081 # workerUI
       - 6066
-      - 4040
-      - 4041
+      - 4040:4040
+      - 4041:4041
+      # HDFS ports
+      - 50010:50010
+      - 50020:50020
+      - 8088  # resource manager webapp port
+      - 19888 # mapreduce job history webapp server
     networks:
       - net_hadoop
 
   spark-worker1:
-    build: .
-    image: spark
+    image: hongchhe/spark
     container_name: spark-worker1
     hostname: spark-worker1
     environment:
-      - HOST_TYPE=slave
+      - SPARK_TYPE=slave
+      - SPARK_MASTER_URL=spark:\/\/spark-master0:7077
+      # HDFS ENV
+      - HDFS_HOST=spark-master0
+      - SLAVE_LIST=spark-worker0 \nspark-worker1
+      - HDFS_TYPE=datanode
+      - YARN_TYPE=none
+      - HDFS_REPLICA=2
+    volumes:
+      - ./myvol:/myvol
     ulimits:
       memlock:
         soft: -1
@@ -74,13 +113,57 @@ services:
     cap_add:
       - IPC_LOCK
     ports:
-      - 8081
+      - 8091:8081 # workerUI
       - 6066
-      - 4040
-      - 4041
+      - 4050:4040
+      - 4051:4041
+      # HDFS ports
+      - 50011:50010
+      - 50021:50020
+      - 8088  # resource manager webapp port
+      - 19888 # mapreduce job history webapp server
     networks:
       - net_hadoop
 
+  oracle11g:
+    image: wnameless/oracle-xe-11g
+    container_name: oracle11g
+    hostname: oracle11g
+    environment:
+      - ORACLE_ALLOW_REMOTE=true
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    ports:
+      - 49161:1521
+    networks:
+      - net_hadoop
+
+#  sparkjob:
+#    image: sparkjobserver:2.1.1
+#    container_name: sparkjob
+#    hostname: sparkjob
+#    environment:
+#      - SPARK_MASTER_URL=spark:\/\/spark-master0:7077
+#    ulimits:
+#      memlock:
+#        soft: -1
+#        hard: -1
+#      nofile:
+#        soft: 65536
+#        hard: 65536
+#    cap_add:
+#      - IPC_LOCK
+#    ports:
+#      - 8090:8090
+#    networks:
+#      - net_hadoop
 networks:
   net_hadoop:
     driver: bridge

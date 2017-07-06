@@ -2,7 +2,7 @@ version: '3.0'
 services:
   spark:
     build: .
-    image: spark
+    image: hongchhe/spark
     container_name: spark0
     ulimits:
       memlock:

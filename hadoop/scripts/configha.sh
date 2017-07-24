@@ -19,8 +19,9 @@ sed -i ${HADOOP_CONF_DIR}/hdfs-site.xml.ha -e "s/{{nn1Host}}/${NN1_HOST}/"
 sed -i ${HADOOP_CONF_DIR}/hdfs-site.xml.ha -e "s/{{nn2Host}}/${NN2_HOST}/"
 sed -i ${HADOOP_CONF_DIR}/hdfs-site.xml.ha -e "s/{{JNHosts}}/${JN_HOSTS}/"
 sed -i ${HADOOP_CONF_DIR}/hdfs-site.xml.ha -e "s/{{journalEditsDir}}/${JOURNAL_EDITS_DIR}/"
-sed -i ${HADOOP_CONF_DIR}/core-site.xml.ha -e "s/{{ZKHosts}}/${ZK_HOSTS}/"
+sed -i ${HADOOP_CONF_DIR}/hdfs-site.xml.ha -e "s/{{userHome}}/${USER_HOME}/"
 
+sed -i ${HADOOP_CONF_DIR}/core-site.xml.ha -e "s/{{ZKHosts}}/${ZK_HOSTS}/"
 sed -i ${HADOOP_CONF_DIR}/core-site.xml -e "s/${HDFS_HOST}:9000/${NAMESERVICES}/"
 sed -i ${HADOOP_CONF_DIR}/core-site.xml.ha -e "s/{{userHome}}/${USER_HOME}/"
 

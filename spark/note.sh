@@ -5,10 +5,13 @@
 #apt-get install -y ipython ipython-notebook
 
 #start pyshark using ipython
-PYSPARK_DRIVER_PYTHON='ipython' ./bin/pyspark
+#PYSPARK_DRIVER_PYTHON='ipython' ./bin/pyspark
+#source ~/.bash_profile
+pyspark
 
 ### Prepare Test Data
-sudo docker cp data sp1:/opt/spark/
+docker cp data spark0:/opt/spark/
+docker cp ~/Downloads/testdata/ml-latest-small spark0:/opt/spark
 
 ### Python Examples:
 
@@ -17,6 +20,8 @@ sc
 
 # sc master -running locally
 sc.master
+
+## Quick Start Example
 
 # read input file
 f_in = sc.textFile("/opt/spark/data/clickstream/clickstream.csv")
@@ -41,3 +46,49 @@ words = words.reduceByKey(add)
 # take top 3 words by frequency
 words.take(3)
 
+
+# The follows show two ways getting tables from oracle. As for the dataFrame API, Please refer to 
+# http://spark.apache.org/docs/latest/api/python/pyspark.sql.html?highlight=jdbc#pyspark.sql.DataFrame
+# 1.
+jdbc_df = spark.read \
+    .format("jdbc") \
+    .option("url", "jdbc:oracle:thin:@oracle11g:1521:xe") \
+    .option("dbtable", "system.test1") \
+    .option("user", "system") \
+    .option("password", "oracle") \
+    .load()
+
+
+# 2. 
+from pyspark import SparkContext, SparkConf
+from pyspark.sql import SQLContext
+ORACLE_DRIVER_PATH = "/opt/spark/jars/ojdbc7.jar"                                             
+conf = SparkConf()
+conf.setMaster("local")
+conf.setAppName("Oracle_imp_exp")
+sqlContext = SQLContext(sc)
+
+ORACLE_CONNECTION_URL ="jdbc:oracle:thin:system/oracle@oracle11g:1521:xe"   
+ora_df=spark.read.format('jdbc').options(
+     url=ORACLE_CONNECTION_URL,
+     dbtable="test1",
+     driver="oracle.jdbc.OracleDriver"
+     ).load() 
+
+
+
+jdbc_df.createOrReplaceTempView("viewtest1")
+jdbc_df.registerTempTable("tabletest1")
+jdbc_df.createGlobalTempView("glviewtest1")
+sqlContext.registerDataFrameAsTable(jdbc_df,"registertest1")
+spark.sql("SELECT * FROM viewtest1").show()
+
+# save into hdfs as a parquet file
+jdbc_df.write.parquet("hdfs://spark-master0:9000/test/my/test1")
+
+# save into the embed hive warehouse
+jdbc_df.write.saveAsTable("test2","parquet","overwrite")
+
+
+linksDf1 = spark.read.option("header", "true").option("mode", "DROPMALFORMED").csv("hdfs://spark-master0:9000/test/data/ml-latest-small/links.csv")
+linksDf1 = spark.read.csv("hdfs://spark-master0:9000/test/data/ml-latest-small/links.csv", header=True, mode="DROPMALFORMED")

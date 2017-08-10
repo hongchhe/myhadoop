@@ -91,9 +91,10 @@ def importData(args):
 
     tablePath = "{0}/stages/{1}/{2}".format(hdfsHost, catagoryName, fileName)
     # save into hdfs as a parquet file
-    jdbcDF.write.parquet(tablePath)
+    jdbcDF.write.parquet(tablePath, mode="overwrite")
 
     # save into the embed hive warehouse
     # jdbcDf.write.saveAsTable("test2","parquet","overwrite")
+
 
 importData(args)

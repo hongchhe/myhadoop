@@ -4,10 +4,6 @@
         <value>{{hdfsHost}}</value>
     </property>
     <property>
-        <name>yarn.nodemanager.aux-services</name>
-        <value>mapreduce_shuffle</value>
-    </property>
-     <property>
         <name>yarn.resourcemanager.address</name>
         <value>{{hdfsHost}}:8032</value>
     </property>
@@ -28,25 +24,46 @@
     </property>
 
     <property>
+        <name>yarn.resourcemanager.resource-tracker.address</name>
+        <value>{{hdfsHost}}:8035</value>
+    </property>
+
+    <property>
         <name>yarn.resourcemanager.webapp.address</name>
         <value>{{hdfsHost}}:8088</value>
     </property>
 
+    <!--Notes:
+    If the logs shows the "NodeManager from hadoop0 doesn't satisfy minimum allocations" errors,
+    You might solve the issue by updating the following memmory-mb and cpu-vcores to suit your machine.
+    -->
     <property>
-      <name>yarn.nodemanager.docker-container-executor.exec-name</name>
-      <value>/usr/bin/docker</value>
-      <description>
-         Name or path to the Docker client. This is a required parameter. If this is empty,
-         user must pass an image name as part of the job invocation(see below).
-      </description>
+        <name>yarn.nodemanager.resource.memory-mb</name>
+        <value>8192</value>
     </property>
     <property>
-      <name>yarn.nodemanager.container-executor.class</name>
-      <value>org.apache.hadoop.yarn.server.nodemanager.DockerContainerExecutor</value>
-      <description>
-         This is the container executor setting that ensures that all
-    jobs are started with the DockerContainerExecutor.
-      </description>
+        <name>yarn.nodemanager.resource.cpu-vcores</name>
+        <value>8</value>
     </property>
+    <!--property>
+        <name>yarn.nodemanager.pmem-check-enabled</name>
+        <value>false</value>
+        <description>Whether physical memory limits will be enforced for containers.</description>
+    </property>
+
+    <property>
+        <name>yarn.nodemanager.vmem-check-enabled</name>
+        <value>false</value>
+        <description>Whether virtual memory limits will be enforced for containers</description>
+    </property-->
+    <!--property>
+        <name>yarn.nodemanager.aux-services</name>
+        <value>mapreduce_shuffle</value>
+    </property>
+    <property>
+        <name>yarn.nodemanager.aux-services.mapreduce.shuffle.class</name>
+        <value>org.apache.hadoop.mapred.ShuffleHandler</value>
+    </property-->
+
 
 </configuration>

@@ -1,7 +1,7 @@
 #!/bin/bash
 
 : ${HDFS_HOST:=localhost}
-
+: ${HDFS_WORK_BASE_DIR:="\/tmp"}
 # split each slave using "\n". For example: lh1 \nlh2 
 : ${SLAVE_LIST:=localhost}
 
@@ -16,6 +16,7 @@
 : ${NN_HA=false}
 
 sed -i ${HADOOP_CONF_DIR}/core-site.xml -e "s/{{hdfsHost}}/${HDFS_HOST}/"
+sed -i ${HADOOP_CONF_DIR}/core-site.xml -e "s/{{hdfsWorkBaseDir}}/${HDFS_WORK_BASE_DIR}/"
 sed -i ${HADOOP_CONF_DIR}/hdfs-site.xml -e "s/{{hdfsHost}}/${HDFS_HOST}/"
 sed -i ${HADOOP_CONF_DIR}/mapred-site.xml -e "s/{{hdfsHost}}/${HDFS_HOST}/"
 sed -i ${HADOOP_CONF_DIR}/yarn-site.xml -e "s/{{hdfsHost}}/${HDFS_HOST}/"
@@ -52,7 +53,7 @@ if [ $HDFS_TYPE = "namenode" ]; then
         hadoop-daemon.sh --script hdfs start zkfc
         
         # start hdfs namenode;
-        hadoop-daemon.sh --config $HADOOP_CONF_DIR --script hdfs start namenode;   
+        hadoop-daemon.sh --config $HADOOP_CONF_DIR --script hdfs start namenode;
 
         # Since automatic failover has been enabled in the configuration, the start-dfs.sh
         # script will now automatically start a ZKFC daemon on any machine that runs a NameNode.
@@ -62,7 +63,7 @@ if [ $HDFS_TYPE = "namenode" ]; then
         # format namenode
         hdfs namenode -format -nonInteractive;
         # start hdfs namenode;
-        hadoop-daemon.sh --config $HADOOP_CONF_DIR --script hdfs start namenode;        
+        hadoop-daemon.sh --config $HADOOP_CONF_DIR --script hdfs start namenode;
     fi
 
 elif [ $HDFS_TYPE = "standbynamenode" ]; then
@@ -90,7 +91,10 @@ elif [ $HDFS_TYPE = "checkpoint" ]; then
     hdfs namenode -checkpoint;
 elif [ $HDFS_TYPE = "all" ]; then
     #start hdfs integrated with namenode, secondary namenode, datanode
-    start-dfs.sh
+    hdfs namenode -format -nonInteractive;
+    #start-dfs.sh
+    hadoop-daemon.sh --config $HADOOP_CONF_DIR --script hdfs start namenode;
+    hadoop-daemon.sh --config $HADOOP_CONF_DIR --script hdfs start datanode;
 else
     echo "Do nothing for hdfs service."
 fi
@@ -100,7 +104,7 @@ if [ $YARN_TYPE = "resourcemanager" ]; then
     yarn-daemon.sh --config $YARN_CONF_DIR  start resourcemanager
 elif [ $YARN_TYPE = "nodemanager" ]; then
     yarn-daemons.sh --config $YARN_CONF_DIR  start nodemanager
-elif [ $YARN_TYPE = "nodemanager" ]; then
+elif [ $YARN_TYPE = "proxyserver" ]; then
     yarn-daemon.sh --config $YARN_CONF_DIR  start proxyserver
 elif [ $YARN_TYPE = "all" ]; then
     start-yarn.sh

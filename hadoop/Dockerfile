@@ -1,4 +1,4 @@
-FROM hongchhe/ubuntu-python-java
+FROM hongchhe/ubuntu-python3-java
 MAINTAINER Hongchuang <hehongchuang@hotmail.com>
 
 # set environment variable
@@ -6,11 +6,11 @@ ENV     HADOOP_HOME=/opt/hadoop
 ENV     HADOOP_CONF_DIR=$HADOOP_HOME/etc/hadoop
 ENV     YARN_CONF_DIR=$HADOOP_HOME/etc/hadoop
 ENV     PATH=$PATH:$HADOOP_HOME/bin:$HADOOP_HOME/sbin 
-ENV     HADOOP_VERSION=2.7.3
+ENV     HADOOP_VERSION=2.7.4
 #ENV     HADOOP_COMMON_LIB_NATIVE_DIR=$HADOOP_HOME/lib/native
 ENV     HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib"
 
-#install hadoop 2.7.3
+#install hadoop 2.7.4
 RUN     mkdir -p ${HADOOP_HOME} \
      && wget -q -O - http://mirrors.hust.edu.cn/apache/hadoop/common/stable/hadoop-${HADOOP_VERSION}.tar.gz | tar -xzC ${HADOOP_HOME} --strip-components=1 
 
@@ -24,12 +24,12 @@ EXPOSE  8485 8480
 EXPOSE  50090 50100 50105
 # Mapred ports
 EXPOSE  10020 19888
-# Resource Manager ports
-EXPOSE  8088
-# Yarn ports
-EXPOSE  8030 8031 8032 8033 8040 8042
-#Other ports
-EXPOSE  49707 2122
+# YARN Resource Manager webapp.address/webapp.https.address ports
+EXPOSE  8088 8090
+# YARN Resource Manager ports scheduler/resource-tracker/applications manager interface/admin
+EXPOSE  8030 8031 8032 8033
+# YARN Node Manager ports  localizer/webapp
+EXPOSE  8040 8042
 
 COPY    conf/* $HADOOP_CONF_DIR/
 COPY    scripts/ $HADOOP_HOME/scripts

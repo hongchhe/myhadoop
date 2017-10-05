@@ -4,15 +4,12 @@ services:
     build: .
     image: hongchhe/hadoop
     container_name: hadoop0
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    cap_add:
-      - IPC_LOCK
+    hostname: hadoop0
+    environment:
+      - HDFS_HOST=hadoop0
+      - SLAVE_LIST=hadoop0
+      - HDFS_WORK_BASE_DIR=\/myvol\/hadoop0
+      - YARN_TYPE=none
     ports:
       - 50010:50010
       - 50020:50020
@@ -22,11 +19,22 @@ services:
       - 8020:8020
       - 8088:8088   # resource manager webapp port
       - 19888:19888 # mapreduce job history webapp server
+    volumes:
+      - ./myvol:/myvol
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:50070"]
       interval: 1m30s
       timeout: 10s
       retries: 3
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
     networks:
       - net_hadoop
 networks:

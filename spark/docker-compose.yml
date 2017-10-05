@@ -16,6 +16,7 @@ services:
       - WORKER_LIST=spark-master0
       - HDFS_HOST=spark-master0
       - SLAVE_LIST=spark-master0
+      - HDFS_WORK_BASE_DIR=\/myvol\/spark-master0
       - HDFS_TYPE=all
       - YARN_TYPE=none
       - HDFS_REPLICA=1
@@ -39,6 +40,9 @@ services:
       - 4040:4040 # driverProgramWebUI
       - 4041:4041
       - 4042:4042
+      - 4043:4043
+      - 4044:4044
+      - 4045:4045
       - 8888:8888 # ipython notebook
       # HDFS ENV
       - 50070:50070 # name node port
@@ -57,25 +61,25 @@ services:
     networks:
       - net_hadoop
 
-  oracle11g:
-    image: wnameless/oracle-xe-11g
-    container_name: oracle11g
-    hostname: oracle11g
-    environment:
-      - ORACLE_ALLOW_REMOTE=true
-    ulimits:
-      memlock:
-        soft: -1
-        hard: -1
-      nofile:
-        soft: 65536
-        hard: 65536
-    cap_add:
-      - IPC_LOCK
-    ports:
-      - 49161:1521
-    networks:
-      - net_hadoop
+#  oracle11g:
+#    image: wnameless/oracle-xe-11g
+#    container_name: oracle11g
+#    hostname: oracle11g
+#    environment:
+#      - ORACLE_ALLOW_REMOTE=true
+#    ulimits:
+#      memlock:
+#        soft: -1
+#        hard: -1
+#      nofile:
+#        soft: 65536
+#        hard: 65536
+#    cap_add:
+#      - IPC_LOCK
+#    ports:
+#      - 49161:1521
+#    networks:
+#      - net_hadoop
 
 networks:
   net_hadoop:

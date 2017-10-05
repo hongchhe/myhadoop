@@ -44,19 +44,12 @@ def handle_argument():
     return parser
 
 
-parser = handle_argument()
-args = parser.parse_args()
-
-
-def importData(args):
+def importData(argDict):
     from pyspark.sql import SparkSession
 
-    dbType, dbServer, sid = args.dbtype, args.dbserver, args.sid
-    userName, password = args.username, args.password
-    dbTable = args.dbtable
-
-    hdfsHost = args.hdfshost
-    catagoryName, fileName = args.catagory, args.filename
+    dbType, dbServer, sid = argDict["dbtype"], argDict["dbserver"], argDict["sid"]
+    userName, password = argDict["username"], argDict["password"]
+    dbTable = argDict["dbtable"]
 
     connUrl = "jdbc:{0}://{1}:3306".format(dbType, dbServer)
     if dbType == "oracle":
@@ -88,7 +81,28 @@ def importData(args):
     # jdbcDF3 = spark.read.jdbc(
     #     "jdbc:postgresql:dbserver", "schema.tablename",
     #     properties={"user": "username", "password": "password"})
+    return jdbcDF
 
+
+def _convertArgsToDict(args):
+    argDict = {}
+    argDict["dbtype"], argDict["dbserver"], argDict["sid"] = args.dbtype, args.dbserver, args.sid
+    argDict["username"], argDict["password"] = args.username, args.password
+    argDict["dbtable"] = args.dbtable
+
+    return argDict
+
+
+def main():
+
+    parser = handle_argument()
+    args = parser.parse_args()
+
+    argDict = _convertArgsToDict(args)
+    jdbcDF = importData(argDict)
+
+    hdfsHost = args.hdfshost
+    catagoryName, fileName = args.catagory, args.filename
     tablePath = "{0}/stages/{1}/{2}".format(hdfsHost, catagoryName, fileName)
     # save into hdfs as a parquet file
     jdbcDF.write.parquet(tablePath, mode="overwrite")
@@ -97,4 +111,5 @@ def importData(args):
     # jdbcDf.write.saveAsTable("test2","parquet","overwrite")
 
 
-importData(args)
+if __name__ == '__main__':
+    main()

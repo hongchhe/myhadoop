@@ -40,6 +40,7 @@ cp /myvol/authorized_keys ~/.ssh/authorized_keys
 
 
 : ${HDFS_HOST:=localhost}
+: ${HDFS_WORK_BASE_DIR:="\/tmp"}
 # split each slave using "\n". For example: lh1 \nlh2 
 : ${SLAVE_LIST:=localhost}
 # HDFS types: namenode, checkpoint, backup, datanode
@@ -49,6 +50,7 @@ cp /myvol/authorized_keys ~/.ssh/authorized_keys
 : ${HDFS_REPLICA:=1}
 
 sed -i ${HADOOP_CONF_DIR}/core-site.xml -e "s/{{hdfsHost}}/${HDFS_HOST}/"
+sed -i ${HADOOP_CONF_DIR}/core-site.xml -e "s/{{hdfsWorkBaseDir}}/${HDFS_WORK_BASE_DIR}/"
 sed -i ${HADOOP_CONF_DIR}/hdfs-site.xml -e "s/{{hdfsHost}}/${HDFS_HOST}/"
 sed -i ${HADOOP_CONF_DIR}/mapred-site.xml -e "s/{{hdfsHost}}/${HDFS_HOST}/"
 sed -i ${HADOOP_CONF_DIR}/yarn-site.xml -e "s/{{hdfsHost}}/${HDFS_HOST}/"
@@ -59,7 +61,7 @@ echo -e ${SLAVE_LIST} > ${HADOOP_CONF_DIR}/slaves
 #start the related-type hdfs
 if [ $HDFS_TYPE = "namenode" ]; then
   # format namenode
-  hdfs namenode -format
+  hdfs namenode -format  -nonInteractive
   hadoop-daemon.sh --config $HADOOP_CONF_DIR --script hdfs start namenode
 elif [ $HDFS_TYPE = "backup" ]; then
   hdfs namenode -backup;
@@ -71,7 +73,7 @@ elif [ $HDFS_TYPE = "all" ]; then
   #start hdfs integrated with namenode, secondary namenode, datanode
   #start-dfs.sh
   # format namenode
-  hdfs namenode -format
+  hdfs namenode -format -nonInteractive
   hadoop-daemon.sh --config $HADOOP_CONF_DIR --script hdfs start namenode
   hadoop-daemon.sh --config $HADOOP_CONF_DIR --script hdfs start datanode
 else

@@ -3,8 +3,11 @@ import sys
 import traceback
 
 
-def getDataFrameFromSource(jsonData):
+def getDataFrameFromSource(jsonData, hdfsHost="spark-master0", hdfsPort="9000", rootFolder="users"):
     """
+    get spark DataFrame once the input data source is valid.
+    Notes:
+    hdfsHost, hdfsPort, rootFolder are available if jsonData["sourceType"] is hdfs and the hdfsUrl key isn't provided
     """
 
     columnList = "*"
@@ -15,10 +18,9 @@ def getDataFrameFromSource(jsonData):
         if ("hdfsUrl" in jsonData.keys()) and jsonData["hdfsUrl"].startswith("hdfs:"):
             url = jsonData["hdfsUrl"]
         else:
-            hdfsHost, port, rootFolder = "spark-master0", "9000", "users"
             userName = jsonData["database"]
             tableName = jsonData["tableName"]
-            url = "hdfs://{0}:{1}/{2}/{3}/{4}".format(hdfsHost, port, rootFolder, userName, tableName)
+            url = "hdfs://{0}:{1}/{2}/{3}/{4}".format(hdfsHost, hdfsPort, rootFolder, userName, tableName)
         try:
             df1 = spark.read.parquet(url).select(columnList)
         except Exception:
@@ -73,7 +75,7 @@ def getBasicStats(opTypeList, dataFrame):
     pandasDF1 is a pandas data frame
     it will output json data.
     """
-    from  pyspark.sql.types import DecimalType, FloatType, NumericType
+    from pyspark.sql.types import DecimalType, FloatType, NumericType
 
     availTypeList = [
         "count", "sum", "mean", "median",

@@ -11,7 +11,7 @@ ENV     HADOOP_VERSION=2.7.4
 ENV     HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib"
 
 #install hadoop 2.7.4
-RUN     curl -s http://mirrors.hust.edu.cn/apache/hadoop/common/stable/hadoop-${HADOOP_VERSION}.tar.gz | tar -xz -C /opt/ \
+RUN     curl -s http://mirrors.hust.edu.cn/apache/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz | tar -xz -C /opt/ \
      && cd /opt \
      && ln -s ./hadoop-${HADOOP_VERSION} hadoop
 

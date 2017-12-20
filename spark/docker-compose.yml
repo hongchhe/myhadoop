@@ -1,9 +1,9 @@
 version: '3.0'
 services:
   spark-master0:
-    build:
-      context: .
-      dockerfile: DockerfileWithLivy
+    # build:
+    #   context: .
+    #   dockerfile: DockerfileWithLivy
     image: hongchhe/sparkwithlivy
     container_name: spark-master0
     hostname: spark-master0

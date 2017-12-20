@@ -12,7 +12,7 @@ ENV     HADOOP_OPTS="-Djava.library.path=$HADOOP_HOME/lib"
 
 #install hadoop 2.7.4
 RUN     mkdir -p ${HADOOP_HOME} \
-     && wget -q -O - http://mirrors.hust.edu.cn/apache/hadoop/common/stable/hadoop-${HADOOP_VERSION}.tar.gz | tar -xzC ${HADOOP_HOME} --strip-components=1 
+     && wget -q -O - http://mirrors.hust.edu.cn/apache/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-${HADOOP_VERSION}.tar.gz | tar -xzC ${HADOOP_HOME} --strip-components=1 
 
 # Hdfs name node ports
 EXPOSE  50070 50470 8020 9000
@@ -38,8 +38,7 @@ RUN     chmod +x $HADOOP_HOME/scripts/run.sh \
      && sed -i '/^export JAVA_HOME/ s:.*:export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64:' $HADOOP_CONF_DIR/hadoop-env.sh \
      && sed -i '/^export HADOOP_CONF_DIR/ s:.*:export HADOOP_CONF_DIR=/opt/hadoop/etc/hadoop/:' $HADOOP_CONF_DIR/hadoop-env.sh \
      && mkdir -p /myvol \
-     # allow ssh using root user as a temporary solution. 
-     && mv $HADOOP_CONF_DIR/sshd_config /etc/ssh/sshd_config
+     && mv $HADOOP_CONF_DIR/sshd_config /etc/ssh/sshd_config # allow ssh using root user as a temporary solution. 
 
 VOLUME /myvol
 

@@ -14,6 +14,7 @@
 : ${HDFS_REPLICA:=1}
 # set if Namenode is HA state.
 : ${NN_HA=false}
+: ${NN_REGISTRATION_IP_HOSTNAME_CHECK=true}
 
 sed -i ${HADOOP_CONF_DIR}/core-site.xml -e "s/{{hdfsHost}}/${HDFS_HOST}/"
 sed -i ${HADOOP_CONF_DIR}/core-site.xml -e "s/{{hdfsWorkBaseDir}}/${HDFS_WORK_BASE_DIR}/"
@@ -21,6 +22,7 @@ sed -i ${HADOOP_CONF_DIR}/hdfs-site.xml -e "s/{{hdfsHost}}/${HDFS_HOST}/"
 sed -i ${HADOOP_CONF_DIR}/mapred-site.xml -e "s/{{hdfsHost}}/${HDFS_HOST}/"
 sed -i ${HADOOP_CONF_DIR}/yarn-site.xml -e "s/{{hdfsHost}}/${HDFS_HOST}/"
 sed -i ${HADOOP_CONF_DIR}/hdfs-site.xml -e "s/{{dfsReplication}}/${HDFS_REPLICA}/"
+sed -i ${HADOOP_CONF_DIR}/hdfs-site.xml -e "s/{{nnRegistrationIpHostnameCheck}}/${NN_REGISTRATION_IP_HOSTNAME_CHECK}/"
 
 echo -e ${SLAVE_LIST} > ${HADOOP_CONF_DIR}/slaves
 

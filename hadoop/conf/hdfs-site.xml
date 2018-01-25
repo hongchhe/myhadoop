@@ -35,6 +35,11 @@
   </property>
 
   <property>
+    <name>dfs.namenode.datanode.registration.ip-hostname-check</name>
+    <value>{{nnRegistrationIpHostnameCheck}}</value>
+  </property>
+
+  <property>
     <name>dfs.datanode.address</name>
     <value>0.0.0.0:50010</value>
     <description>

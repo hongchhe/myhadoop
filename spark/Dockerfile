@@ -1,4 +1,4 @@
-FROM hongchhe/hadoop:2.7.4-3.5.2
+FROM hongchhe/hadoop:2.9.0-3.5.2
 MAINTAINER Hongchuang <hehongchuang@hotmail.com>
 
 # set environment variable

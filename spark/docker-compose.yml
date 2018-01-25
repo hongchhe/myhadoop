@@ -1,10 +1,10 @@
 version: '3.0'
 services:
   spark-master0:
-    # build:
-    #   context: .
-    #   dockerfile: DockerfileWithLivy
-    image: hongchhe/sparkwithlivy
+    build:
+      context: .
+      dockerfile: DockerfileWithLivy
+    image: hongchhe/sparkwithlivy:2.2.1-2.9.0-0.4.0-0.1
     container_name: spark-master0
     hostname: spark-master0
     environment:
@@ -13,6 +13,9 @@ services:
       - START_SPARK_HISTORY_SERVER=true
       - SPARK_HISTORYLOG_DIR=hdfs:\/\/spark-master0:9000\/spark\/spark-events
       - SPARK_EVENTLOG_DIR=hdfs:\/\/spark-master0:9000\/spark\/eventlog
+      - SPARK_DRIVER_MAXRESULTSIZE=4g
+      - SPARK_DRIVER_MEMORY=4g
+      - SPARK_EXECUTOR_MEMORY=4g
       - WORKER_LIST=spark-master0
       - HDFS_HOST=spark-master0
       - SLAVE_LIST=spark-master0
@@ -44,6 +47,7 @@ services:
       - 4044:4044
       - 4045:4045
       - 8888:8888 # ipython notebook
+      - 8081:8081 # worker webUI
       # HDFS ENV
       - 50070:50070 # name node port
       - 9000:9000

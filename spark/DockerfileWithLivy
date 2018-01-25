@@ -1,4 +1,4 @@
-FROM hongchhe/hadoop:2.7.4-3.5.2
+FROM hongchhe/hadoop:2.9.0-3.5.2
 MAINTAINER Hongchuang <hehongchuang@hotmail.com>
 
 # set environment variable
@@ -21,7 +21,7 @@ RUN     cd /opt \
      && mv livy-${LIVY_VERSION}-bin ${LIVY_HOME} \
      && rm -f livy-${LIVY_VERSION}-bin.zip \
      && mkdir ${LIVY_HOME}/logs \
-     && mv ${LIVY_HOME}/conf ${LIVY_HOME}/conf.bak
+     && mv ${LIVY_HOME}/conf ${LIVY_HOME}/conf.template
 
 
 ENV     PYSPARK_PYTHON=/usr/bin/python

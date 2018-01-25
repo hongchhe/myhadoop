@@ -17,6 +17,7 @@ service ssh start
 
 # fix the warn of "Unable to load native-hadoop library..."
 echo "export LD_LIBRARY_PATH=\$HADOOP_HOME/lib/native" >> /root/.bashrc
+echo "export HADOOP_COMMON_LIB_NATIVE_DIR=\$HADOOP_HOME/lib/native" >> /root/.bashrc
 source /root/.bashrc
 
 # refer to http://spark.apache.org/docs/latest/running-on-yarn.html#configuring-the-external-shuffle-service
@@ -48,6 +49,7 @@ cp /myvol/authorized_keys ~/.ssh/authorized_keys
 # YARN types: resourcemanager, nodemanager, webappproxy
 : ${YARN_TYPE:=all}
 : ${HDFS_REPLICA:=1}
+: ${NN_REGISTRATION_IP_HOSTNAME_CHECK=true}
 
 sed -i ${HADOOP_CONF_DIR}/core-site.xml -e "s/{{hdfsHost}}/${HDFS_HOST}/"
 sed -i ${HADOOP_CONF_DIR}/core-site.xml -e "s/{{hdfsWorkBaseDir}}/${HDFS_WORK_BASE_DIR}/"
@@ -55,6 +57,7 @@ sed -i ${HADOOP_CONF_DIR}/hdfs-site.xml -e "s/{{hdfsHost}}/${HDFS_HOST}/"
 sed -i ${HADOOP_CONF_DIR}/mapred-site.xml -e "s/{{hdfsHost}}/${HDFS_HOST}/"
 sed -i ${HADOOP_CONF_DIR}/yarn-site.xml -e "s/{{hdfsHost}}/${HDFS_HOST}/"
 sed -i ${HADOOP_CONF_DIR}/hdfs-site.xml -e "s/{{dfsReplication}}/${HDFS_REPLICA}/"
+sed -i ${HADOOP_CONF_DIR}/hdfs-site.xml -e "s/{{nnRegistrationIpHostnameCheck}}/${NN_REGISTRATION_IP_HOSTNAME_CHECK}/"
 
 echo -e ${SLAVE_LIST} > ${HADOOP_CONF_DIR}/slaves
 
@@ -87,16 +90,31 @@ fi
 : ${SPARK_MASTER_URL:="local"}
 #: ${SPARK_MASTER_URL:="spark:\/\/master:7077"}
 : ${START_SPARK_HISTORY_SERVER:="false"}
+: ${SPARK_EVENTLOG_ENABLED:="true"}
 : ${SPARK_EVENTLOG_DIR:="file:\/tmp\/eventlog"}
 #: ${SPARK_EVENTLOG_DIR:="hdfs:\/\/spark-master0:9000\/spark\/eventlog"}
 : ${SPARK_HISTORYLOG_DIR:="file:\/tmp\/spark-events"}
+: ${SPARK_SERIALIZER:="org.apache.spark.serializer.KryoSerializer"}
+: ${USE_COMPRESSED_OOPS:="-XX:+UseCompressedOops"}
+: ${SPARK_DRIVER_CORES:="2"}
+: ${SPARK_DRIVER_MAXRESULTSIZE:="1g"}
+: ${SPARK_DRIVER_MEMORY:="1g"}
+: ${SPARK_EXECUTOR_MEMORY:="1g"}
 
 sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkRecoveryMode}}/${SPARK_RECOVERY_MODE}/"
 sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkZKUrl}}/${SPARK_ZK_URL}/"
 sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkZKDir}}/${SPARK_ZK_DIR}/"
 sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkMaster}}/${SPARK_MASTER_URL}/"
-sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkEventLogDir}}/${SPARK_EVENTLOG_DIR}/"
-sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkHistoryLogDir}}/${SPARK_HISTORYLOG_DIR}/"
+sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkEventLogEnabled}}/${SPARK_EVENTLOG_ENABLED}/"
+sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkEventLogDir}}/${SPARK_EVENTLOG_DIR}/g"
+#sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkHistoryLogDir}}/${SPARK_HISTORYLOG_DIR}/"
+sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkSerializer}}/${SPARK_SERIALIZER}/"
+sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{useCompressedOops}}/${USE_COMPRESSED_OOPS}/"
+sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkDriverCores}}/${SPARK_DRIVER_CORES}/"
+sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkDriverMaxResultSize}}/${SPARK_DRIVER_MAXRESULTSIZE}/"
+sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkDriverMemory}}/${SPARK_DRIVER_MEMORY}/"
+sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkExecutorMemory}}/${SPARK_EXECUTOR_MEMORY}/"
+
 
 #set the embed hive configuration.
 echo "spark.sql.warehouse.dir=hdfs://${HDFS_HOST}:9000/user/hive/warehouse" >> ${SPARK_CONF_DIR}/spark-defaults.conf 

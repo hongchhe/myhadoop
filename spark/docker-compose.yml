@@ -24,6 +24,8 @@ services:
       - YARN_TYPE=none
       - HDFS_REPLICA=1
       - START_LIVY_SERVER=true
+      - SPARK_DYNAMIC_ALLOCATION_ENABLED=true
+      - SPARK_SHUFFLE_SERVICE_ENABLED=true
     volumes:
       - ./myvol:/myvol
     ulimits:

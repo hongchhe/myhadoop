@@ -23,6 +23,8 @@ services:
       - YARN_TYPE=none
       - HDFS_REPLICA=2
       - START_LIVY_SERVER=true
+      - SPARK_DYNAMIC_ALLOCATION_ENABLED=true
+      - SPARK_SHUFFLE_SERVICE_ENABLED=true
     volumes:
       - ./myvol:/myvol
     ulimits:
@@ -75,6 +77,8 @@ services:
       - HDFS_TYPE=datanode
       - YARN_TYPE=none
       - HDFS_REPLICA=2
+      - SPARK_DYNAMIC_ALLOCATION_ENABLED=true
+      - SPARK_SHUFFLE_SERVICE_ENABLED=true
     volumes:
       - ./myvol:/myvol
     ulimits:
@@ -114,6 +118,8 @@ services:
       - HDFS_TYPE=datanode
       - YARN_TYPE=none
       - HDFS_REPLICA=2
+      - SPARK_DYNAMIC_ALLOCATION_ENABLED=true
+      - SPARK_SHUFFLE_SERVICE_ENABLED=true
     volumes:
       - ./myvol:/myvol
     ulimits:

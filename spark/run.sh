@@ -100,6 +100,8 @@ fi
 : ${SPARK_DRIVER_MAXRESULTSIZE:="1g"}
 : ${SPARK_DRIVER_MEMORY:="1g"}
 : ${SPARK_EXECUTOR_MEMORY:="1g"}
+: ${SPARK_DYNAMIC_ALLOCATION_ENABLED:="false"}
+: ${SPARK_SHUFFLE_SERVICE_ENABLED:="false"}
 
 sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkRecoveryMode}}/${SPARK_RECOVERY_MODE}/"
 sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkZKUrl}}/${SPARK_ZK_URL}/"
@@ -114,6 +116,9 @@ sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkDriverCores}}/${SPARK_
 sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkDriverMaxResultSize}}/${SPARK_DRIVER_MAXRESULTSIZE}/"
 sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkDriverMemory}}/${SPARK_DRIVER_MEMORY}/"
 sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkExecutorMemory}}/${SPARK_EXECUTOR_MEMORY}/"
+sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkDynamicAllocationEnabled}}/${SPARK_DYNAMIC_ALLOCATION_ENABLED}/"
+sed -i ${SPARK_CONF_DIR}/spark-defaults.conf -e "s/{{sparkShuffleServiceEnabled}}/${SPARK_SHUFFLE_SERVICE_ENABLED}/"
+
 
 
 #set the embed hive configuration.

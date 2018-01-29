@@ -1,8 +1,9 @@
-FROM       hongchhe/ubuntu-python-java
+#FROM       hongchhe/ubuntu-python-java
+FROM       centos:7
 MAINTAINER Hongchuang <hehongchuang@hotmail.com>
 
 ARG        ZK_URL=https://mirrors.tuna.tsinghua.edu.cn/apache/zookeeper/
-ARG        ZK_VERSION=3.4.10
+ARG        ZK_VERSION=3.4.11
 
 LABEL      name="zookeeper" version=$VERSION
 
@@ -10,9 +11,13 @@ LABEL      name="zookeeper" version=$VERSION
 ENV        ZK_HOME=/opt/zookeeper
 ENV        PATH=$PATH:${ZK_HOME}/bin:${ZK_HOME}/sbin 
 
-RUN        mkdir -p ${ZK_HOME} \
-        && wget -q -O - ${ZK_URL}/zookeeper-$ZK_VERSION/zookeeper-$ZK_VERSION.tar.gz \
-           | tar -xzC ${ZK_HOME} --strip-components=1
+RUN        yum update -y \
+        && yum install -y openssh.x86_64 java-1.8.0-openjdk.x86_64 \
+        && mkdir -p ${ZK_HOME} \
+        && curl ${ZK_URL}/zookeeper-${ZK_VERSION}/zookeeper-${ZK_VERSION}.tar.gz \
+           | tar -xzC ${ZK_HOME} --strip-components=1 \
+        && yum clean all \
+        && rm -rf /var/cache/yum
 
 COPY       conf/* ${ZK_HOME}/conf/
 COPY       scripts/* ${ZK_HOME}/

@@ -16,7 +16,6 @@ service ssh start
 
 ln -sf /myvol/authorized_keys ~/.ssh/authorized_keys
 
-
 cp ${ZK_HOME}/conf/zoo-${ZK_MODE}.cfg ${ZK_HOME}/conf/zoo.cfg
 
 python createServerList.py ${ZK_SERVER_NAME} ${ZK_SERVER_NUM} ${ZK_MODE} >> ${ZK_HOME}/conf/zoo.cfg

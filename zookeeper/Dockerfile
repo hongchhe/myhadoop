@@ -1,4 +1,3 @@
-#FROM       hongchhe/ubuntu-python-java
 FROM       centos:7
 MAINTAINER Hongchuang <hehongchuang@hotmail.com>
 
@@ -12,7 +11,7 @@ ENV        ZK_HOME=/opt/zookeeper
 ENV        PATH=$PATH:${ZK_HOME}/bin:${ZK_HOME}/sbin 
 
 RUN        yum update -y \
-        && yum install -y openssh.x86_64 java-1.8.0-openjdk.x86_64 \
+        && yum install -y java-1.8.0-openjdk.x86_64 \
         && mkdir -p ${ZK_HOME} \
         && curl ${ZK_URL}/zookeeper-${ZK_VERSION}/zookeeper-${ZK_VERSION}.tar.gz \
            | tar -xzC ${ZK_HOME} --strip-components=1 \
@@ -22,13 +21,7 @@ RUN        yum update -y \
 COPY       conf/* ${ZK_HOME}/conf/
 COPY       scripts/* ${ZK_HOME}/
 
-RUN        chmod +x ${ZK_HOME}/run.sh \
-        && mkdir -p ${ZK_HOME}/var/data \
-        && mkdir -p /myvol \
-           # allow ssh using root user as a temporary solution. 
-        && mv ${ZK_HOME}/conf/sshd_config /etc/ssh/sshd_config
-
-VOLUME     /myvol
+RUN        chmod +x ${ZK_HOME}/run.sh
 
 EXPOSE     2181 2888 3888
 

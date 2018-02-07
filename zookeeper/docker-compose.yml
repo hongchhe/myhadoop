@@ -1,16 +1,14 @@
 version: '3.0'
 services:
-  zk1:
+  zk-0:
     build: .
     image: hongchhe/zk
-    container_name: zk1
-    volumes:
-      - ./myvol:/myvol
+    container_name: zk-0
     environment:
       - ZK_MODE=replicated
       - ZK_SERVER_NAME=zk
       - ZK_SERVER_NUM=3
-      - ZK_SERVER_ID=1
+      - ZK_SERVER_ID=0
     ports:
       - 2181:2181
       - 2888:2888
@@ -18,16 +16,14 @@ services:
     networks:
       - net_zookeeper
 
-  zk2:
+  zk-1:
     image: hongchhe/zk
-    container_name: zk2
-    volumes:
-      - ./myvol:/myvol
+    container_name: zk-1
     environment:
       - ZK_MODE=replicated
       - ZK_SERVER_NAME=zk
       - ZK_SERVER_NUM=3
-      - ZK_SERVER_ID=2
+      - ZK_SERVER_ID=1
     ports:
       - 2181
       - 2888
@@ -38,16 +34,14 @@ services:
     networks:
       - net_zookeeper
 
-  zk3:
+  zk-2:
     image: hongchhe/zk
-    container_name: zk3
-    volumes:
-      - ./myvol:/myvol
+    container_name: zk-2
     environment:
       - ZK_MODE=replicated
       - ZK_SERVER_NAME=zk
       - ZK_SERVER_NUM=3
-      - ZK_SERVER_ID=3
+      - ZK_SERVER_ID=2
     ports:
       - 2181
       - 2888

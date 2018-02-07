@@ -1,6 +1,0 @@
-Host *
-   StrictHostKeyChecking no
-   PasswordAuthentication no
-   RSAAuthentication no
-
-
